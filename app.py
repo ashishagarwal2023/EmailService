@@ -1,10 +1,11 @@
+import os
 from validators import email as validate_email
 from flask_httpauth import HTTPBasicAuth
 import html
 import send
 from flask import Flask, render_template, request, jsonify
 
-sec = "716AEA1CB4812E73556FBE61F6D8D"
+sec = os.environ.get("KEY")
 
 auth = HTTPBasicAuth()
 
