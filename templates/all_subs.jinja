@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link rel="stylesheet" href="/static/dash.css" />
+    <title>Dashboard</title>
+</head>
+
+<body>
+    <div id="container">
+        <div class="breadcrumbs">
+            <a href="/">Home</a>
+            › All Subscribers
+        </div>
+        <div class="main" id="main">
+            <div class="content">
+                <div id="content">
+                    <h1>View all subscribers</h1>
+                    <div id="content-main">
+                        <ul class="object-tools">
+                            <li>
+                                <a id="newSub" href="#">New Subscriber</a>
+                            </li>
+                        </ul>
+                        <div class="module" id="changelist">
+                            <div class="changelist-form-container">
+                                <p class="paginator" id="count">{{(subsLength)}} subscribers</p>
+                            </div>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th scope="col">ID</th>
+                                    <th scope="col">Email</th>
+                                    <th scope="col">Subscribed On</th>
+                                    <th scope="col">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for sub in subs %}
+                                <tr>
+                                    <th scope="row">{{sub[0]}}</th>
+                                    <td>{{sub[1]}}</td>
+                                    <td>{{sub[2]}}</td>
+                                    <td>
+                                        <!-- <a href="#">Block</a> -->
+                                        <a href="#" class="unSubLink">Unsubscribe</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <br class="clear">
+                </div>
+            </div>
+        </div>
+        <script>
+            let links = document.querySelectorAll(".unSubLink");
+
+            links.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    let parentParent = this.parentElement.parentElement;
+                    let secondChild = parentParent.children[1];
+                    let firstTdChild = parentParent.querySelector('td');
+                    let email = secondChild ? secondChild.innerText : firstTdChild.innerText;
+
+                    fetch('/api/remSub', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ email: email }),
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            console.log("Deleted a row");
+                            window.location.reload();
+                        } else {
+                            console.log("Failed to remove a subscriber");
+                        }
+                    })
+                    .catch((error) => {
+                        console.error('Error:', error);
+                    });
+                });
+            });
+         let newSub = document.querySelector("#newSub");
+
+    newSub.addEventListener('click', function(e) {
+        e.preventDefault();
+        let email = prompt("Enter the email:");
+
+        fetch('/api/newSub', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email: email }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                console.log("Added a new subscriber");
+                window.location.reload();
+            } else {
+                console.error('Failed to add new subscriber');
+            }
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+        });
+    });
+        </script>
+</body>
+
+</html>

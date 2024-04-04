@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link rel="stylesheet" href="/static/dash.css" />
+    <title>Dashboard</title>
+</head>
+
+<body>
+    <div id="container">
+        <div class="breadcrumbs">
+            <a href="/">Home</a>
+            › New Post
+        </div>
+        <div class="main" id="main">
+            <div class="content">
+                <div id="content">
+                    <h1>New email</h1>
+                    <div id="content-main">
+                        <ul class="object-tools">
+                            <li>
+                                <a href="/">Return to Home</a>
+                            </li>
+                        </ul>
+                        <div class="post">
+                            <div class="form-group row">
+                                <label for="subject" class="col-sm-2 col-form-label">Subject:</label>
+                                <div class="col-sm-10">
+                                    <input type="text" id="subject" name="subject" class="form-control form-control-lg" value="What a nice day! Let's think about it.">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="message" class="col-sm-2 col-form-label">Message:</label>
+                                <div class="col-sm-10">
+                                    <textarea id="message" name="message" class="form-control form-control-lg">Hello to <i>{email}</i> from <b>ashish</b></textarea>
+                                </div>
+                            </div>
+                            <a href="#" id="post" class="submitBtn">Post & Deliver to everyone</a>
+                        </div>
+                    </div>
+                    <p class="block">
+                                You cannot make changes to your email once its sent. It will be sent to all of your subscribers. Posting might take some time, espically if you have a lot of subscribers and <b>if the server goes down, your emails might not be sent.</b>
+                            </p>
+                    <br class="clear">
+                </div>
+            </div>
+        </div>
+<script>
+    let postButton = document.querySelector("#post");
+
+postButton.addEventListener('click', function(e) {
+    e.preventDefault();
+    this.style.display = "none";
+    let subject = document.querySelector("#subject").value;
+    let message = document.querySelector("#message").innerHTML;
+
+    fetch('/new_email', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ subject: subject, message: message }),
+    })
+    .then(data => {
+        console.log(data);
+        if (data.status == 200) {
+            alert("Server successfully sent emails to everyone. Check logs if there were any errors.");
+            this.style.display = "block";
+        } else {
+            alert("Failed to post");
+            console.error('Failed to post');
+            this.style.display = "block";
+        }
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+    });
+});
+</script>
+</body>
+
+</html> 
